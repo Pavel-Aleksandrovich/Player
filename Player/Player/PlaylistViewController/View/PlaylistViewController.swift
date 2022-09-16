@@ -14,8 +14,8 @@ protocol IPlaylistViewController: AnyObject {
 
 final class PlaylistViewController: UIViewController {
     
-    private let tableView = UITableView()
     private let presenter: IPlaylistPresenter
+    private let mainView = PlaylistView()
     
     var onCellTappedHandler: ((Int) -> ())?
     
@@ -31,40 +31,23 @@ final class PlaylistViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        super.loadView()
+        self.view = self.mainView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.presenter.onViewAttached(controller: self)
-        self.view.backgroundColor = .white
-        self.title = "Playlist"
-        configTableView()
-        makeTableViewConstraints()
-    }
-    
-    func configTableView() {
-            self.tableView.showsVerticalScrollIndicator = false
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-            self.tableView.register(PlaylistTableCell.self,
-                                    forCellReuseIdentifier: PlaylistTableCell.id)
-    }
-    
-    func makeTableViewConstraints() {
-        self.view.addSubview(self.tableView)
-        self.tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            self.tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            self.tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-        ])
+        self.mainView.tableViewDataSource = self
+        self.mainView.tableViewDelegate = self
     }
 }
 
 extension PlaylistViewController: IPlaylistViewController {
     
     func reloadData() {
-        self.tableView.reloadData()
+        self.mainView.reloadData()
     }
 }
 
@@ -75,7 +58,8 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
         60
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView,
+                   numberOfRowsInSection section: Int) -> Int {
         self.presenter.numberOfRowsInSection()
     }
     
@@ -89,7 +73,6 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
         
         let song = self.presenter.getSongById(indexPath.row)
         cell.set(song)
-        
         
         cell.select(self.presenter.getSelectedSong(indexPath.row))
         

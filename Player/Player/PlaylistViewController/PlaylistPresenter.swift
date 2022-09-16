@@ -51,6 +51,4 @@ extension PlaylistPresenter: IPlaylistPresenter {
             return "music.note"
         }
     }
-    
-    
 }

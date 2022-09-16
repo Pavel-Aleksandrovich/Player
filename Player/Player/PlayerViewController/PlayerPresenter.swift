@@ -31,6 +31,7 @@ extension PlayerPresenter: IPlayerPresenter {
     
     func onViewAttached(controller: IPlayerViewController) {
         self.controller = controller
+        
         self.setOnLoopTappedHandler()
         self.setOnNextTappedHandler()
         self.setOnPreviousTappedHandler()
@@ -39,32 +40,12 @@ extension PlayerPresenter: IPlayerPresenter {
         self.setOnSliderValueChangeHandler()
         self.setOnPlayTappedHandler()
         
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(onSongChange), name: NSNotification.Name("cUrReNtSoNgSeTnOtIfIcAtIoN"), object: nil)
-        
-        
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name("audioPlayerDidFinishPlaying"), object: nil)
     }
     
     @objc func playerDidFinishPlaying() {
         self.dataManager.nextTapped()
         self.configPlayer()
-    }
-    
-    @objc func onSongChange() {
-        print(#function)
-    }
-    
-    func stringFromTimeInterval(interval: TimeInterval) -> String {
-        
-        let ti = NSInteger(interval)
-        
-        let ms = Int((interval.truncatingRemainder(dividingBy: 1)) * 100)
-        let seconds = ti % 60
-        let minutes = (ti / 60) % 60
-        let hours = (ti / 3600)
-        
-        return String(format: "%0.2d:%0.2d:%0.2d:%0.2d",hours, minutes, seconds, ms)
     }
 }
 
@@ -110,9 +91,9 @@ private extension PlayerPresenter {
             let currentTime = self.player.currentTime
             let duration = self.player.duration
             
-            self.controller?.maximumDurationLabelText = self.stringFromTimeInterval(interval: duration)
+            self.controller?.maximumDurationLabelText = Converter.stringFrom(interval: duration)
             
-            self.controller?.minimumDurationLabelText = self.stringFromTimeInterval(interval: currentTime)
+            self.controller?.minimumDurationLabelText = Converter.stringFrom(interval: currentTime)
             
             self.controller?.sliderValue = Float(currentTime)
         }
@@ -120,7 +101,7 @@ private extension PlayerPresenter {
     
     func setOnPlaylistScreenTappedHandler() {
         self.controller?.onPlaylistScreenTappedHandler = { [ weak self ] in
-            self?.router.pushPlaylistViewController(completion: {
+            self?.router.pushToPlaylist(completion: {
                 [ weak self ] index in
                 guard let self = self else { return }
                 

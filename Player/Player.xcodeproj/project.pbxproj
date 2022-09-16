@@ -26,6 +26,9 @@
 		8447520C28D466A500FF5C32 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447520B28D466A500FF5C32 /* DataManager.swift */; };
 		8447520E28D4726600FF5C32 /* PlaylistPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447520D28D4726600FF5C32 /* PlaylistPresenter.swift */; };
 		8447521228D4AD0100FF5C32 /* DataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447521128D4AD0100FF5C32 /* DataStorage.swift */; };
+		8447521428D4CB1000FF5C32 /* LoopState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447521328D4CB1000FF5C32 /* LoopState.swift */; };
+		8447521628D4CD6A00FF5C32 /* Converter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447521528D4CD6A00FF5C32 /* Converter.swift */; };
+		8447521928D4CF4100FF5C32 /* PlaylistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447521828D4CF4100FF5C32 /* PlaylistView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +56,9 @@
 		8447520B28D466A500FF5C32 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		8447520D28D4726600FF5C32 /* PlaylistPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistPresenter.swift; sourceTree = "<group>"; };
 		8447521128D4AD0100FF5C32 /* DataStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStorage.swift; sourceTree = "<group>"; };
+		8447521328D4CB1000FF5C32 /* LoopState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopState.swift; sourceTree = "<group>"; };
+		8447521528D4CD6A00FF5C32 /* Converter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Converter.swift; sourceTree = "<group>"; };
+		8447521828D4CF4100FF5C32 /* PlaylistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,8 +91,8 @@
 		844751D228D1E17000FF5C32 /* Player */ = {
 			isa = PBXGroup;
 			children = (
-				8447520B28D466A500FF5C32 /* DataManager.swift */,
-				8447521128D4AD0100FF5C32 /* DataStorage.swift */,
+				8447521528D4CD6A00FF5C32 /* Converter.swift */,
+				8447521728D4CE3300FF5C32 /* DataBase */,
 				8447520F28D4802C00FF5C32 /* PlayerViewController */,
 				8447521028D4805600FF5C32 /* PlaylistViewController */,
 				844751F528D2DA9600FF5C32 /* SongModel.swift */,
@@ -125,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				844751D728D1E17000FF5C32 /* PlayerViewController.swift */,
+				8447521328D4CB1000FF5C32 /* LoopState.swift */,
 				8447520928D439CD00FF5C32 /* AudioPlayer.swift */,
 				844751FE28D367FC00FF5C32 /* PlayerPresenter.swift */,
 				8447520028D3689200FF5C32 /* PlayerRouter.swift */,
@@ -136,12 +143,30 @@
 		8447521028D4805600FF5C32 /* PlaylistViewController */ = {
 			isa = PBXGroup;
 			children = (
-				844751E828D1E3E900FF5C32 /* PlaylistViewController.swift */,
+				8447521A28D4D0F700FF5C32 /* View */,
 				8447520D28D4726600FF5C32 /* PlaylistPresenter.swift */,
 				8447520728D36ED700FF5C32 /* PlaylistAssembly.swift */,
-				844751EA28D2CF5100FF5C32 /* PlaylistTableCell.swift */,
 			);
 			path = PlaylistViewController;
+			sourceTree = "<group>";
+		};
+		8447521728D4CE3300FF5C32 /* DataBase */ = {
+			isa = PBXGroup;
+			children = (
+				8447520B28D466A500FF5C32 /* DataManager.swift */,
+				8447521128D4AD0100FF5C32 /* DataStorage.swift */,
+			);
+			path = DataBase;
+			sourceTree = "<group>";
+		};
+		8447521A28D4D0F700FF5C32 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				844751E828D1E3E900FF5C32 /* PlaylistViewController.swift */,
+				8447521828D4CF4100FF5C32 /* PlaylistView.swift */,
+				844751EA28D2CF5100FF5C32 /* PlaylistTableCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -222,11 +247,14 @@
 				844751F628D2DA9600FF5C32 /* SongModel.swift in Sources */,
 				844751FF28D367FC00FF5C32 /* PlayerPresenter.swift in Sources */,
 				844751D828D1E17000FF5C32 /* PlayerViewController.swift in Sources */,
+				8447521628D4CD6A00FF5C32 /* Converter.swift in Sources */,
 				844751E928D1E3E900FF5C32 /* PlaylistViewController.swift in Sources */,
 				8447520828D36ED700FF5C32 /* PlaylistAssembly.swift in Sources */,
 				8447520128D3689200FF5C32 /* PlayerRouter.swift in Sources */,
 				844751D428D1E17000FF5C32 /* AppDelegate.swift in Sources */,
 				8447521228D4AD0100FF5C32 /* DataStorage.swift in Sources */,
+				8447521928D4CF4100FF5C32 /* PlaylistView.swift in Sources */,
+				8447521428D4CB1000FF5C32 /* LoopState.swift in Sources */,
 				8447520328D3694800FF5C32 /* PlayerAssembly.swift in Sources */,
 				8447520E28D4726600FF5C32 /* PlaylistPresenter.swift in Sources */,
 				8447520A28D439CD00FF5C32 /* AudioPlayer.swift in Sources */,

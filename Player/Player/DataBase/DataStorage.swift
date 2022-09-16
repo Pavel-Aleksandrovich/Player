@@ -13,11 +13,7 @@ final class DataStorage {
     
     private init() {}
     
-    var index = Int() {
-        didSet {
-            NotificationCenter.default.post(name: NSNotification.Name("cUrReNtSoNgSeTnOtIfIcAtIoN"), object: nil)
-        }
-    }
+    var index = Int()
     
     let songsArray: [String] = ["11", "22", "33"]
 }
