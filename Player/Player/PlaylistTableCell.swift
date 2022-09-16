@@ -14,9 +14,6 @@ final class PlaylistTableCell: UITableViewCell {
     private let currencyNameLabel = UILabel()
     private let charCodeLabel = UILabel()
     private let flagImageView = UIImageView()
-    let favoriteImageView = UIImageView()
-    
-    var onFavoriteImageTappedHandler: (() -> ())?
     
     override init(style: UITableViewCell.CellStyle,
                   reuseIdentifier: String?) {
@@ -31,6 +28,10 @@ final class PlaylistTableCell: UITableViewCell {
 }
 
 extension PlaylistTableCell {
+    
+    func set(_ model: String) {
+        self.currencyNameLabel.text = model
+    }
 }
 
 // MARK: - Config Appearance
@@ -39,10 +40,8 @@ private extension PlaylistTableCell {
     func configAppearance() {
         self.configView()
         self.configFlagImageView()
-        self.configFavoriteImageView()
         self.configCharCodeLabel()
         self.configCurrencyNameLabel()
-        self.configTapGestureRecognizer()
     }
     
     func configView() {
@@ -57,30 +56,12 @@ private extension PlaylistTableCell {
         self.flagImageView.contentMode = .scaleAspectFill
     }
     
-    func configFavoriteImageView() {
-        self.favoriteImageView.tintColor = .darkGray
-        self.favoriteImageView.contentMode = .scaleAspectFill
-        self.favoriteImageView.isUserInteractionEnabled = true
-        self.favoriteImageView.accessibilityIdentifier = "Favorite"
-    }
-    
     func configCharCodeLabel() {
         self.charCodeLabel.textColor = .systemGray
     }
     
     func configCurrencyNameLabel() {
         self.currencyNameLabel.font = UIFont.boldSystemFont(ofSize: 19)
-    }
-    
-    func configTapGestureRecognizer() {
-        let tapGesture = UITapGestureRecognizer(target: self,
-                                                action: #selector
-                                                (self.onFavoriteImageTapped))
-        self.favoriteImageView.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc func onFavoriteImageTapped() {
-        self.onFavoriteImageTappedHandler?()
     }
 }
 
@@ -89,7 +70,6 @@ private extension PlaylistTableCell {
     
     func makeConstraints() {
         self.makeFlagImageViewConstraints()
-        self.makeFavoriteImageViewConstraints()
         self.makeCurrencyNameLabelConstraints()
         self.makeCharCodeLabelConstraints()
     }
@@ -106,25 +86,13 @@ private extension PlaylistTableCell {
         ])
     }
     
-    func makeFavoriteImageViewConstraints() {
-        self.contentView.addSubview(self.favoriteImageView)
-        self.favoriteImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            self.favoriteImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),
-            self.favoriteImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 15),
-            self.favoriteImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -15),
-            self.favoriteImageView.widthAnchor.constraint(equalToConstant: self.bounds.height - 10)
-        ])
-    }
-    
     func makeCurrencyNameLabelConstraints() {
         self.addSubview(self.currencyNameLabel)
         self.currencyNameLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             self.currencyNameLabel.leadingAnchor.constraint(equalTo: self.flagImageView.trailingAnchor, constant: 5),
-            self.currencyNameLabel.trailingAnchor.constraint(equalTo: self.favoriteImageView.leadingAnchor),
+            self.currencyNameLabel.trailingAnchor.constraint(equalTo: self.leadingAnchor),
             self.currencyNameLabel.topAnchor.constraint(equalTo: self.centerYAnchor),
             self.currencyNameLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor),
         ])
@@ -136,7 +104,7 @@ private extension PlaylistTableCell {
         
         NSLayoutConstraint.activate([
             self.charCodeLabel.leadingAnchor.constraint(equalTo: self.flagImageView.trailingAnchor, constant: 5),
-            self.charCodeLabel.trailingAnchor.constraint(equalTo: self.favoriteImageView.leadingAnchor),
+            self.charCodeLabel.trailingAnchor.constraint(equalTo: self.leadingAnchor),
             self.charCodeLabel.topAnchor.constraint(equalTo: self.topAnchor),
             self.charCodeLabel.bottomAnchor.constraint(equalTo: self.centerYAnchor),
         ])
