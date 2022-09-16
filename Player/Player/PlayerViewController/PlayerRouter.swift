@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol IPlayerRouter: AnyObject {
-    func pushPlaylistViewController()
+    func pushPlaylistViewController(completion: @escaping(Int) -> ())
 }
 
 final class PlayerRouter {
@@ -19,8 +19,8 @@ final class PlayerRouter {
 
 extension PlayerRouter: IPlayerRouter {
     
-    func pushPlaylistViewController() {
-        let vc = PlaylistAssembly.build()
+    func pushPlaylistViewController(completion: @escaping(Int) -> ()) {
+        let vc = PlaylistAssembly.build(completion: completion)
         let navigationController = UINavigationController(rootViewController: vc)
 //        self.controller?.present(navigationController, animated: true)
 //        navigationController.modalPresentationStyle = .overCurrentContext

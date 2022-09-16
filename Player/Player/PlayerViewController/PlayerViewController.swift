@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 enum LoopState: Int {
     case off = 0
@@ -85,11 +84,6 @@ final class PlayerViewController: UIViewController {
     private let loopImageView = UIImageView()
     private let minimumDurationLabel = UILabel()
     private let maximumDurationLabel = UILabel()
-    
-    private var songsArray: [String] = ["11", "22", "33"]
-//    private var player = AVAudioPlayer()
-    private var index = Int()
-    private var loopState: LoopState = .off
     
     init(presenter: IPlayerPresenter) {
         self.presenter = presenter
@@ -211,7 +205,7 @@ final class PlayerViewController: UIViewController {
         self.slider.minimumTrackTintColor = .label.withAlphaComponent(0.5)
         self.slider.maximumTrackTintColor = .systemGray.withAlphaComponent(0.5)
         self.slider.thumbTintColor = .darkGray
-        self.slider.minimumValue = 0.0
+        self.slider.minimumValue = 0.01
         
         slider.addTarget(self, action: #selector(onSongSliderDragBegin), for: .touchDown)
         slider.addTarget(self, action: #selector(onSongSliderValueChange), for: .valueChanged)
@@ -243,47 +237,7 @@ final class PlayerViewController: UIViewController {
        
         
         self.ff()
-        
-//        
-//        NotificationCenter.default.addObserver(self, selector: #selector(didEnd), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-//        
     }
-    
-    @objc func didEnd() {
-        print(#function)
-        print("#function")
-        print("#function")
-        print("#function")
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-    }
-    
-//    func config() {
-//        if self.songsArray.count > 0 {
-//            let string = Bundle.main.path(forResource: songsArray[self.index],
-//                                          ofType: "mp3")
-//
-//            guard let string = string else { return }
-//
-//            let url = URL(string: string)
-//
-//            guard let url = url else { print("url error")
-//                return }
-//
-//            do {
-//                self.player = try AVAudioPlayer(contentsOf: url)
-//                self.player.play()
-//            } catch {
-//                print(error.localizedDescription)
-//            }
-//
-//            self.player.numberOfLoops = self.loopState.rawValue
-//            self.slider.maximumValue = Float(self.player.duration)
-//        }
-//    }
     
     func createDisplayLink() {
        let caDisplayLinkTimer = CADisplayLink(target: self,
@@ -307,62 +261,19 @@ final class PlayerViewController: UIViewController {
     }
     
     @objc func onLoopTapped() {
-//        switch self.loopState {
-//        case .off:
-//            self.loopState = .on
-//            self.loopImageView.image = UIImage(systemName: "repeat.circle.fill")
-//            self.player.numberOfLoops = self.loopState.rawValue
-//        case .on:
-//            self.loopState = .off
-//            self.loopImageView.image = UIImage(systemName: "repeat")
-//            self.player.numberOfLoops = self.loopState.rawValue
-//        }
-        
         self.onLoopTappedHandler?()
         print(#function)
     }
     
     @objc func onNextTapped() {
-//        self.index += 1
-//
-//        if self.index == self.songsArray.count {
-//            self.index = 0
-//        }
-        
-//        self.config()
-        
         self.onNextTappedHandler?()
         print(#function)
     }
     
     @objc func onPreviousTapped() {
-//        let count = self.songsArray.count
-//
-//        if count != 0 {
-//            self.index -= 1
-//        }
-//
-//        if self.index < 0 {
-//            self.index = count - 1
-//        }
-        
-//        self.config()
-        
         self.onPreviousTappedHandler?()
         print(#function)
     }
-    
-//    func stringFromTimeInterval(interval: TimeInterval) -> String {
-//
-//        let ti = NSInteger(interval)
-//
-//        let ms = Int((interval.truncatingRemainder(dividingBy: 1)) * 100)
-//        let seconds = ti % 60
-//        let minutes = (ti / 60) % 60
-//        let hours = (ti / 3600)
-//
-//        return String(format: "%0.2d:%0.2d:%0.2d:%0.2d",hours, minutes, seconds, ms)
-//    }
     
     @objc func onBarButtonTapped() {
         self.onPlaylistScreenTappedHandler?()
@@ -370,11 +281,6 @@ final class PlayerViewController: UIViewController {
     }
     
     @objc func onTimerFire() {
-//        self.slider.value = Float(self.player.currentTime)
-//        self.minimumDurationLabel.text = self.stringFromTimeInterval(interval: self.player.currentTime)
-//
-//        self.maximumDurationLabel.text = self.stringFromTimeInterval(interval: self.player.duration)
-        
         self.onDisplayLinkChangeHandler?()
     }
     
@@ -383,39 +289,12 @@ final class PlayerViewController: UIViewController {
     }
     
     @objc func onSongSliderValueChange() {
-//        self.player.play()
-//        player.currentTime = Double(self.slider.value)
-        
         self.onSliderValueChangeHandler?()
     }
     
     @objc func onPlayTapped() {
         print(#function)
         self.onPlayTappedHandler?()
-//        switch self.player.isPlaying {
-//        case true:
-//            self.player.pause()
-//
-//
-//            try! AVAudioSession.sharedInstance().setActive(false)
-//
-//
-//            self.playImageView.image = UIImage(systemName: "play.fill")
-//        case false:
-//
-//
-//            try! AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
-//
-//
-//            self.player.play()
-//            self.playImageView.image = UIImage(systemName: "pause.fill")
-//
-//            if self.player.currentTime == 0 {
-//                self.config()
-//            }
-//
-//        }
-        
     }
 }
 

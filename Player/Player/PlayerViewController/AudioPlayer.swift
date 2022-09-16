@@ -19,7 +19,7 @@ protocol IAudioPlayer: AnyObject {
     func setSong(string: String)
 }
 
-final class AudioPlayer {
+final class AudioPlayer: NSObject {
     
     private var player = AVAudioPlayer()
     
@@ -54,10 +54,6 @@ final class AudioPlayer {
     }
     
     var loopState: LoopState = .off
-    
-    
-    init() {
-    }
 }
 
 extension AudioPlayer: IAudioPlayer {
@@ -86,6 +82,19 @@ extension AudioPlayer: IAudioPlayer {
             self.player.numberOfLoops = self.loopState.rawValue
         } catch {
             print(error.localizedDescription)
+        }
+        self.player.delegate = self
+    }
+    
+}
+
+extension AudioPlayer: AVAudioPlayerDelegate {
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer,
+                                     successfully flag: Bool) {
+        
+        if player.currentTime == 0 {
+            NotificationCenter.default.post(name: NSNotification.Name("audioPlayerDidFinishPlaying"), object: nil)
         }
     }
 }

@@ -8,13 +8,16 @@
 import UIKit
 
 protocol IPlaylistViewController: AnyObject {
-    
+    var onCellTappedHandler: ((Int) -> ())? { get set }
+    func reloadData()
 }
 
 final class PlaylistViewController: UIViewController {
     
     private let tableView = UITableView()
     private let presenter: IPlaylistPresenter
+    
+    var onCellTappedHandler: ((Int) -> ())?
     
     init(presenter: IPlaylistPresenter) {
         self.presenter = presenter
@@ -32,14 +35,12 @@ final class PlaylistViewController: UIViewController {
         super.viewDidLoad()
         self.presenter.onViewAttached(controller: self)
         self.view.backgroundColor = .white
-        self.title = "D"
+        self.title = "Playlist"
         configTableView()
         makeTableViewConstraints()
     }
     
     func configTableView() {
-//            self.tableView.backgroundColor = .clear
-//            self.tableView.separatorStyle = .none
             self.tableView.showsVerticalScrollIndicator = false
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -52,17 +53,27 @@ final class PlaylistViewController: UIViewController {
         self.tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            self.tableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            self.tableView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
-            self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
         ])
     }
 }
 
-extension PlaylistViewController: IPlaylistViewController {}
+extension PlaylistViewController: IPlaylistViewController {
+    
+    func reloadData() {
+        self.tableView.reloadData()
+    }
+}
 
 extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView,
+                   heightForRowAt indexPath: IndexPath) -> CGFloat {
+        60
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         self.presenter.numberOfRowsInSection()
@@ -79,11 +90,15 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
         let song = self.presenter.getSongById(indexPath.row)
         cell.set(song)
         
+        
+        cell.select(self.presenter.getSelectedSong(indexPath.row))
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
+        self.onCellTappedHandler?(indexPath.row)
         print(#function)
     }
 }
