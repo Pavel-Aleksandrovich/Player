@@ -10,7 +10,6 @@ import AVFoundation
 
 protocol IAudioPlayer: AnyObject {
     var loopState: LoopState { get set }
-    var numberOfLoops: Int { get set }
     var currentTime: TimeInterval { get set }
     var duration: TimeInterval { get }
     var isPlaying: Bool { get }
@@ -22,15 +21,6 @@ protocol IAudioPlayer: AnyObject {
 final class AudioPlayer: NSObject {
     
     private var player = AVAudioPlayer()
-    
-    var numberOfLoops: Int {
-        get {
-            self.player.numberOfLoops
-        }
-        set {
-            self.player.numberOfLoops = newValue
-        }
-    }
     
     var isPlaying: Bool {
         get {
@@ -53,17 +43,29 @@ final class AudioPlayer: NSObject {
         }
     }
     
-    var loopState: LoopState = .off
+    var loopState: LoopState = .off {
+        didSet {
+            self.player.numberOfLoops = self.loopState.rawValue
+        }
+    }
 }
 
 extension AudioPlayer: IAudioPlayer {
     
     func pause() {
         self.player.pause()
+        
+        NotificationCenter.default.post(
+            name: PlayerNotification.didPause.name,
+            object: nil)
     }
     
     func play() {
         self.player.play()
+        
+        NotificationCenter.default.post(
+            name: PlayerNotification.didPlay.name,
+            object: nil)
     }
     
     func setSong(string: String) {
@@ -78,7 +80,7 @@ extension AudioPlayer: IAudioPlayer {
         
         do {
             self.player = try AVAudioPlayer(contentsOf: url)
-            self.player.play()
+            self.play()
             self.player.numberOfLoops = self.loopState.rawValue
         } catch {
             print(error.localizedDescription)
@@ -94,7 +96,9 @@ extension AudioPlayer: AVAudioPlayerDelegate {
                                      successfully flag: Bool) {
         
         if player.currentTime == 0 {
-            NotificationCenter.default.post(name: NSNotification.Name("audioPlayerDidFinishPlaying"), object: nil)
+            NotificationCenter.default.post(
+                name: PlayerNotification.didFinish.name,
+                object: nil)
         }
     }
 }

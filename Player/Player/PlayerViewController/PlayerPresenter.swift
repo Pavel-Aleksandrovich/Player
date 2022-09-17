@@ -9,6 +9,7 @@ import Foundation
 
 protocol IPlayerPresenter: AnyObject {
     func onViewAttached(controller: IPlayerViewController)
+    func removeObserver()
 }
 
 final class PlayerPresenter {
@@ -39,13 +40,14 @@ extension PlayerPresenter: IPlayerPresenter {
         self.setOnPlaylistScreenTappedHandler()
         self.setOnSliderValueChangeHandler()
         self.setOnPlayTappedHandler()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: NSNotification.Name("audioPlayerDidFinishPlaying"), object: nil)
+        self.addObserver()
     }
     
-    @objc func playerDidFinishPlaying() {
-        self.dataManager.nextTapped()
-        self.configPlayer()
+    func removeObserver() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: PlayerNotification.didFinish.name,
+            object: nil)
     }
 }
 
@@ -57,12 +59,10 @@ private extension PlayerPresenter {
             switch self.player.loopState {
             case .off:
                 self.player.loopState = .on
-                self.controller?.setLoopImage(string: "repeat.circle.fill")
-                self.player.numberOfLoops = self.player.loopState.rawValue
+                self.controller?.setLoopImage(PlayerImage.loopOn.name)
             case .on:
                 self.player.loopState = .off
-                self.controller?.setLoopImage(string: "repeat")
-                self.player.numberOfLoops = self.player.loopState.rawValue
+                self.controller?.setLoopImage(PlayerImage.loopOff.name)
             }
         }
     }
@@ -71,7 +71,9 @@ private extension PlayerPresenter {
         self.controller?.onNextTappedHandler = { [ weak self ] in
             guard let self = self else { return }
             
-            self.dataManager.nextTapped()
+            if self.player.loopState == .off {
+                self.dataManager.nextTapped()
+            }
             self.configPlayer()
         }
     }
@@ -79,7 +81,10 @@ private extension PlayerPresenter {
     func setOnPreviousTappedHandler() {
         self.controller?.onPreviousTappedHandler = { [ weak self ] in
             guard let self = self else { return }
-            self.dataManager.previousTapped()
+            
+            if self.player.loopState == .off {
+                self.dataManager.previousTapped()
+            }
             self.configPlayer()
         }
     }
@@ -101,7 +106,12 @@ private extension PlayerPresenter {
     
     func setOnPlaylistScreenTappedHandler() {
         self.controller?.onPlaylistScreenTappedHandler = { [ weak self ] in
-            self?.router.pushToPlaylist(completion: {
+            guard let self = self else { return }
+            
+            let isPlay = self.player.isPlaying
+            
+            self.router.pushToPlaylist(isPlay: isPlay,
+                                        completion: {
                 [ weak self ] index in
                 guard let self = self else { return }
                 
@@ -110,8 +120,18 @@ private extension PlayerPresenter {
                 } else {
                     self.dataManager.setIndex(index)
                     self.configPlayer()
+                    self.setPlayImage()
                 }
             })
+        }
+    }
+    
+    func setPlayImage() {
+        switch self.player.isPlaying {
+        case true:
+            self.controller?.setPlayImage(PlayerImage.pause.name)
+        case false:
+            self.controller?.setPlayImage(PlayerImage.play.name)
         }
     }
     
@@ -135,8 +155,10 @@ private extension PlayerPresenter {
     func configPlayer() {
         if self.dataManager.getAll().isEmpty == false {
             
+            self.dataManager.setSong()
             self.player.setSong(string: self.dataManager.getCurrentSong())
             self.controller?.sliderMaximumValue = Float(self.player.duration)
+            self.setPlayImage()
         }
     }
     
@@ -144,14 +166,27 @@ private extension PlayerPresenter {
         switch self.player.isPlaying {
         case true:
             self.player.pause()
-            self.controller?.setPlayImage(string: "play.fill")
+            self.controller?.setPlayImage(PlayerImage.play.name)
         case false:
             self.player.play()
-            self.controller?.setPlayImage(string: "pause.fill")
+            self.controller?.setPlayImage(PlayerImage.pause.name)
             
             if self.player.currentTime == 0 {
                 self.configPlayer()
             }
         }
+    }
+    
+    func addObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.playerDidFinishPlaying),
+            name: PlayerNotification.didFinish.name,
+            object: nil)
+    }
+    
+    @objc func playerDidFinishPlaying() {
+        self.dataManager.nextTapped()
+        self.configPlayer()
     }
 }

@@ -32,8 +32,8 @@ extension PlaylistTableCell {
         self.songNameLabel.text = model
     }
     
-    func select(_ string: String) {
-        self.posterImageView.image = UIImage(systemName: string)
+    func select(_ image: UIImage?) {
+        self.posterImageView.image = image
     }
 }
 

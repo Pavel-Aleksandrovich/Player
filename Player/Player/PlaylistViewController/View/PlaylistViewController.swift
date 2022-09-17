@@ -42,6 +42,11 @@ final class PlaylistViewController: UIViewController {
         self.mainView.tableViewDataSource = self
         self.mainView.tableViewDelegate = self
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.presenter.removeObserver()
+    }
 }
 
 extension PlaylistViewController: IPlaylistViewController {
@@ -63,7 +68,6 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
         self.presenter.numberOfRowsInSection()
     }
     
-    
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
@@ -82,6 +86,5 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
         self.onCellTappedHandler?(indexPath.row)
-        print(#function)
     }
 }

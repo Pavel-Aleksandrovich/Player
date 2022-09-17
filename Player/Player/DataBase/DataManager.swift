@@ -15,6 +15,7 @@ protocol IDataManager: AnyObject {
     func previousTapped()
     func setIndex(_ index: Int)
     func getCurrentIndex() -> Int
+    func setSong()
 }
 
 final class DataManager {
@@ -64,5 +65,9 @@ extension DataManager: IDataManager {
     
     func setIndex(_ index: Int) {
         self.dataStorage.index = index
+    }
+    
+    func setSong() {
+        self.dataStorage.song = self.dataStorage.songsArray[self.dataStorage.index]
     }
 }

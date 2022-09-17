@@ -19,8 +19,8 @@ protocol IPlayerViewController: AnyObject {
     var onSliderValueChangeHandler: (() -> ())? { get set }
     var sliderValue: Float { get set }
     var sliderMaximumValue: Float { get set }
-    func setLoopImage(string: String)
-    func setPlayImage(string: String)
+    func setLoopImage(_ image: UIImage?)
+    func setPlayImage(_ image: UIImage?)
 }
 
 final class PlayerViewController: UIViewController {
@@ -95,16 +95,21 @@ final class PlayerViewController: UIViewController {
         self.configAppearance()
         self.makeConstraints()
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.presenter.removeObserver()
+    }
 }
 
 extension PlayerViewController: IPlayerViewController {
     
-    func setLoopImage(string: String) {
-        self.loopImageView.image = UIImage(systemName: string)
+    func setLoopImage(_ image: UIImage?) {
+        self.loopImageView.image = image
     }
     
-    func setPlayImage(string: String) {
-        self.playImageView.image = UIImage(systemName: string)
+    func setPlayImage(_ image: UIImage?) {
+        self.playImageView.image = image
     }
 }
 
@@ -130,8 +135,7 @@ private extension PlayerViewController {
     }
     
     func configBarButtonItem() {
-        let image = UIImage(systemName: "list.triangle")
-        let item = UIBarButtonItem(image: image,
+        let item = UIBarButtonItem(image: PlayerImage.playlist.name,
                                    style: .plain,
                                    target: self,
                                    action: #selector
@@ -143,7 +147,7 @@ private extension PlayerViewController {
     func configPosterImageView() {
         self.posterImageView.backgroundColor = .clear
         self.posterImageView.tintColor = .darkGray
-        self.posterImageView.image = UIImage(systemName: "music.note")
+        self.posterImageView.image = PlayerImage.music.name
         self.posterImageView.contentMode = .scaleAspectFit
     }
     
@@ -155,19 +159,19 @@ private extension PlayerViewController {
         self.playImageView.isUserInteractionEnabled = true
         self.playImageView.backgroundColor = .clear
         self.playImageView.tintColor = .darkGray
-        self.playImageView.image = UIImage(systemName: "play.fill")
+        self.playImageView.image = PlayerImage.play.name
         self.playImageView.contentMode = .scaleAspectFill
     }
     
     func configNextImageView() {
         let gesture = UITapGestureRecognizer(target: self,
                                              action: #selector
-                                             (onNextTapped))
+                                             (self.onNextTapped))
         self.nextImageView.addGestureRecognizer(gesture)
         self.nextImageView.isUserInteractionEnabled = true
         self.nextImageView.backgroundColor = .clear
         self.nextImageView.tintColor = .darkGray
-        self.nextImageView.image = UIImage(systemName: "forward.end.fill")
+        self.nextImageView.image = PlayerImage.next.name
         self.nextImageView.contentMode = .scaleAspectFill
     }
     
@@ -177,7 +181,7 @@ private extension PlayerViewController {
                                               (self.onLoopTapped))
         self.loopImageView.addGestureRecognizer(gesture)
         self.loopImageView.isUserInteractionEnabled = true
-        self.loopImageView.image = UIImage(systemName: "repeat")
+        self.loopImageView.image = PlayerImage.loopOff.name
         self.loopImageView.contentMode = .scaleAspectFill
         self.loopImageView.tintColor = .darkGray
     }
@@ -190,7 +194,7 @@ private extension PlayerViewController {
         self.previousImageView.isUserInteractionEnabled = true
         self.previousImageView.backgroundColor = .clear
         self.previousImageView.tintColor = .darkGray
-        self.previousImageView.image = UIImage(systemName: "backward.end.fill")
+        self.previousImageView.image = PlayerImage.previous.name
         self.previousImageView.contentMode = .scaleAspectFill
     }
     
@@ -199,12 +203,9 @@ private extension PlayerViewController {
         self.slider.maximumTrackTintColor = .systemGray.withAlphaComponent(0.5)
         self.slider.thumbTintColor = .darkGray
         self.slider.minimumValue = 0.01
-        
         self.slider.addTarget(self,
-                              action: #selector(onSongSliderDragBegin),
-                              for: .touchDown)
-        self.slider.addTarget(self,
-                              action: #selector(onSongSliderValueChange),
+                              action: #selector
+                              (self.onSongSliderValueChange),
                               for: .valueChanged)
     }
     
@@ -249,9 +250,6 @@ private extension PlayerViewController {
     
     @objc func displayLinkChange() {
         self.onDisplayLinkChangeHandler?()
-    }
-    
-    @objc func onSongSliderDragBegin() {
     }
     
     @objc func onSongSliderValueChange() {

@@ -9,9 +9,11 @@ import UIKit
 
 enum PlaylistAssembly {
     
-    static func build(completion: @escaping(Int) -> ()) -> UIViewController {
+    static func build(isPlay: Bool,
+                      completion: @escaping(Int) -> ()) -> UIViewController {
         
-        let presenter = PlaylistPresenter(completion: completion)
+        let presenter = PlaylistPresenter(isPlay: isPlay,
+                                          completion: completion)
         let controller = PlaylistViewController(presenter: presenter)
         
         return controller
