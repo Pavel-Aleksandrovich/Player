@@ -69,21 +69,18 @@ extension AudioPlayer: IAudioPlayer {
     }
     
     func setSong(string: String) {
-        guard let string = Bundle.main.path(forResource: string,
-                                            ofType: "mp3") else {
-            print("string error")
-            return }
-        
         guard let url = URL(string: string) else {
-            print("url error")
+            print("\(#function) - ERROR: url error")
             return }
         
         do {
-            self.player = try AVAudioPlayer(contentsOf: url)
+            let data = try Data(contentsOf: url)
+            self.player = try AVAudioPlayer(data: data)
+            self.player.prepareToPlay()
             self.play()
             self.player.numberOfLoops = self.loopState.rawValue
         } catch {
-            print(error.localizedDescription)
+            print("\(#function) - ERROR: \(error.localizedDescription)")
         }
         self.player.delegate = self
     }

@@ -8,14 +8,15 @@
 import Foundation
 
 protocol IDataManager: AnyObject {
-    func getAll() -> [String]
-    func getSongByIndex(_ index: Int) -> String
-    func getCurrentSong() -> String
+    func getAll() -> [Track]
+    func getSongByIndex(_ index: Int) -> Track
+    func getCurrentSong() -> Track
     func nextTapped()
     func previousTapped()
     func setIndex(_ index: Int)
     func getCurrentIndex() -> Int
     func setSong()
+    func setData(_ array: [Track])
 }
 
 final class DataManager {
@@ -25,19 +26,15 @@ final class DataManager {
 
 extension DataManager: IDataManager {
     
-    func getAll() -> [String] {
+    func getAll() -> [Track] {
         self.dataStorage.songsArray
     }
     
-    func getSongByIndex(_ index: Int) -> String {
+    func getSongByIndex(_ index: Int) -> Track {
         self.dataStorage.songsArray[index]
     }
     
-    func getFirstSong() -> String {
-        self.dataStorage.songsArray.first ?? ""
-    }
-    
-    func getCurrentSong() -> String {
+    func getCurrentSong() -> Track {
         self.dataStorage.songsArray[self.dataStorage.index]
     }
     
@@ -69,5 +66,9 @@ extension DataManager: IDataManager {
     
     func setSong() {
         self.dataStorage.song = self.dataStorage.songsArray[self.dataStorage.index]
+    }
+    
+    func setData(_ array: [Track]) {
+        self.dataStorage.songsArray.append(contentsOf: array)
     }
 }

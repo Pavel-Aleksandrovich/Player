@@ -18,13 +18,17 @@ final class PlayerPresenter {
     private let router: IPlayerRouter
     private let player: IAudioPlayer
     private let dataManager: IDataManager
+    private let fileManager = FileManag()
+    private let networkManager: INetworkManager
     
     init(router: IPlayerRouter,
          player: IAudioPlayer,
-         dataManager: IDataManager) {
+         dataManager: IDataManager,
+         networkManager: INetworkManager) {
         self.router = router
         self.player = player
         self.dataManager = dataManager
+        self.networkManager = networkManager
     }
 }
 
@@ -41,6 +45,17 @@ extension PlayerPresenter: IPlayerPresenter {
         self.setOnSliderValueChangeHandler()
         self.setOnPlayTappedHandler()
         self.addObserver()
+        
+        print(self.fileManager.findFilesWith(extensionType: "jpg"))
+        
+        self.networkManager.fetchSearchData { [ weak self ] result in
+            switch result {
+            case .success(let array):
+                self?.dataManager.setData(array)
+            case .failure(let error):
+                print("\(#function) ERROR: - \(error.localizedDescription)")
+            }
+        }
     }
     
     func removeObserver() {
@@ -156,7 +171,7 @@ private extension PlayerPresenter {
         if self.dataManager.getAll().isEmpty == false {
             
             self.dataManager.setSong()
-            self.player.setSong(string: self.dataManager.getCurrentSong())
+            self.player.setSong(string: self.dataManager.getCurrentSong().previewUrl ?? "")
             self.controller?.sliderMaximumValue = Float(self.player.duration)
             self.setPlayImage()
         }

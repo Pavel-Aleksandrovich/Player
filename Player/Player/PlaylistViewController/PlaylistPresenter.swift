@@ -10,7 +10,7 @@ import UIKit
 protocol IPlaylistPresenter: AnyObject {
     func onViewAttached(controller: IPlaylistViewController)
     func numberOfRowsInSection() -> Int
-    func getSongById(_ index: Int) -> String
+    func getSongById(_ index: Int) -> Track
     func getSelectedSong(_ index: Int) -> UIImage?
     func removeObserver()
 }
@@ -42,7 +42,7 @@ extension PlaylistPresenter: IPlaylistPresenter {
         self.dataStorage.songsArray.count
     }
     
-    func getSongById(_ index: Int) -> String {
+    func getSongById(_ index: Int) -> Track {
         self.dataStorage.songsArray[index]
     }
     
