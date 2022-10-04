@@ -58,6 +58,7 @@
 		8447522928D5D92400FF5C32 /* PlayerNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNotification.swift; sourceTree = "<group>"; };
 		8447525528D8A4F800FF5C32 /* FileManag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManag.swift; sourceTree = "<group>"; };
 		8447525728D96D8D00FF5C32 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		84D6085128DB06BC00458803 /* Player.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Player.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +91,7 @@
 		844751D228D1E17000FF5C32 /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				84D6085128DB06BC00458803 /* Player.entitlements */,
 				8447525728D96D8D00FF5C32 /* NetworkManager.swift */,
 				8447522628D5ADBA00FF5C32 /* SupportingFiles */,
 				8447521728D4CE3300FF5C32 /* DataBase */,
@@ -401,6 +403,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Player/Player.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PZRD3MXDYZ;
@@ -429,6 +432,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Player/Player.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PZRD3MXDYZ;

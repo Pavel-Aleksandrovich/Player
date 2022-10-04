@@ -46,7 +46,7 @@ extension PlayerPresenter: IPlayerPresenter {
         self.setOnPlayTappedHandler()
         self.addObserver()
         
-        print(self.fileManager.findFilesWith(extensionType: "jpg"))
+        self.fileManager.findFilesWith()
         
         self.networkManager.fetchSearchData { [ weak self ] result in
             switch result {
@@ -130,7 +130,7 @@ private extension PlayerPresenter {
                 [ weak self ] index in
                 guard let self = self else { return }
                 
-                if index == self.dataManager.getCurrentIndex() {
+                if index == self.dataManager.getCurrentIndex {
                     self.playTap()
                 } else {
                     self.dataManager.setIndex(index)
@@ -168,10 +168,10 @@ private extension PlayerPresenter {
     }
     
     func configPlayer() {
-        if self.dataManager.getAll().isEmpty == false {
+        if self.dataManager.getAll.isEmpty == false {
             
             self.dataManager.setSong()
-            self.player.setSong(string: self.dataManager.getCurrentSong().previewUrl ?? "")
+            self.player.setSong(string: self.dataManager.getCurrentSong.previewUrl ?? "")
             self.controller?.sliderMaximumValue = Float(self.player.duration)
             self.setPlayImage()
         }

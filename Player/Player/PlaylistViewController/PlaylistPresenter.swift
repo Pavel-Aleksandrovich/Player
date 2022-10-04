@@ -8,8 +8,8 @@
 import UIKit
 
 protocol IPlaylistPresenter: AnyObject {
+    var getNumberOfRowsInSection: Int { get }
     func onViewAttached(controller: IPlaylistViewController)
-    func numberOfRowsInSection() -> Int
     func getSongById(_ index: Int) -> Track
     func getSelectedSong(_ index: Int) -> UIImage?
     func removeObserver()
@@ -21,6 +21,10 @@ final class PlaylistPresenter {
     private let dataStorage = DataStorage.shared
     private let completion: (Int) -> ()
     private var isPlay: Bool
+    
+    var getNumberOfRowsInSection: Int {
+        self.dataStorage.songsArray.count
+    }
     
     init(isPlay: Bool,
          completion: @escaping(Int) -> ()) {
@@ -36,10 +40,6 @@ extension PlaylistPresenter: IPlaylistPresenter {
         
         self.setOnCellTappedHandler()
         self.addObserver()
-    }
-    
-    func numberOfRowsInSection() -> Int {
-        self.dataStorage.songsArray.count
     }
     
     func getSongById(_ index: Int) -> Track {

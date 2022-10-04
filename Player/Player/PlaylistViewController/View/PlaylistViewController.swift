@@ -65,7 +65,7 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        self.presenter.numberOfRowsInSection()
+        self.presenter.getNumberOfRowsInSection
     }
     
     func tableView(_ tableView: UITableView,
