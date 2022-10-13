@@ -14,9 +14,13 @@ enum PlayerAssembly {
         let router = PlayerRouter()
         let player = AudioPlayer()
         let dataManager = DataManager()
+        let networkManager = NetworkManager()
+        let fileManager = FileManag()
         let presenter = PlayerPresenter(router: router,
                                         player: player,
-                                        dataManager: dataManager)
+                                        dataManager: dataManager,
+                                        fileManager: fileManager,
+                                        networkManager: networkManager)
         let controller = PlayerViewController(presenter: presenter)
         router.controller = controller
         

@@ -8,42 +8,34 @@
 import Foundation
 
 protocol IDataManager: AnyObject {
-    func getAll() -> [String]
-    func getSongByIndex(_ index: Int) -> String
-    func getCurrentSong() -> String
+    var getAll: [TrackRequest] { get }
+    var getCurrentIndex: Int { get }
+    var getCurrentSong: TrackRequest { get }
     func nextTapped()
     func previousTapped()
     func setIndex(_ index: Int)
-    func getCurrentIndex() -> Int
     func setSong()
+    func append(_ array: [TrackRequest])
 }
 
 final class DataManager {
     
     private let dataStorage = DataStorage.shared
-}
-
-extension DataManager: IDataManager {
     
-    func getAll() -> [String] {
+    var getAll: [TrackRequest] {
         self.dataStorage.songsArray
     }
     
-    func getSongByIndex(_ index: Int) -> String {
-        self.dataStorage.songsArray[index]
-    }
-    
-    func getFirstSong() -> String {
-        self.dataStorage.songsArray.first ?? ""
-    }
-    
-    func getCurrentSong() -> String {
-        self.dataStorage.songsArray[self.dataStorage.index]
-    }
-    
-    func getCurrentIndex() -> Int {
+    var getCurrentIndex: Int {
         self.dataStorage.index
     }
+    
+    var getCurrentSong: TrackRequest {
+        self.dataStorage.songsArray[self.dataStorage.index]
+    }
+}
+
+extension DataManager: IDataManager {
     
     func nextTapped() {
         if (self.dataStorage.index + 1) == self.dataStorage.songsArray.count {
@@ -69,5 +61,9 @@ extension DataManager: IDataManager {
     
     func setSong() {
         self.dataStorage.song = self.dataStorage.songsArray[self.dataStorage.index]
+    }
+    
+    func append(_ array: [TrackRequest]) {
+        self.dataStorage.songsArray.append(contentsOf: array)
     }
 }

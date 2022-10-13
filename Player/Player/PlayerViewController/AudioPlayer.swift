@@ -16,6 +16,7 @@ protocol IAudioPlayer: AnyObject {
     func pause()
     func play()
     func setSong(string: String)
+    func getTrack(url: URL) -> TrackRequest?
 }
 
 final class AudioPlayer: NSObject {
@@ -69,25 +70,59 @@ extension AudioPlayer: IAudioPlayer {
     }
     
     func setSong(string: String) {
-        guard let string = Bundle.main.path(forResource: string,
-                                            ofType: "mp3") else {
-            print("string error")
-            return }
-        
         guard let url = URL(string: string) else {
-            print("url error")
+            print("\(#function) <--- URL ERROR")
             return }
         
         do {
-            self.player = try AVAudioPlayer(contentsOf: url)
+            let data = try Data(contentsOf: url)
+            self.player = try AVAudioPlayer(data: data)
+            self.player.prepareToPlay()
             self.play()
             self.player.numberOfLoops = self.loopState.rawValue
         } catch {
-            print(error.localizedDescription)
+            print("\(#function) - ERROR: \(error.localizedDescription)")
         }
         self.player.delegate = self
     }
     
+    func getTrack(url: URL) -> TrackRequest? {
+        var title = String()
+        var artist = String()
+        var album = String()
+        var genre = String()
+        var artwork = Data()
+        
+        let assetMetadata = AVPlayerItem(url: url).asset.commonMetadata
+        
+        for item in assetMetadata {
+            guard let commonKey = item.commonKey else { return nil }
+            
+            switch commonKey.rawValue {
+            case "title":
+                title = item.stringValue ?? ""
+            case "artist":
+                artist = item.stringValue ?? ""
+            case "albumName":
+                album = item.stringValue ?? ""
+            case "type":
+                genre = item.stringValue ?? ""
+            case "artwork":
+                artwork = item.dataValue ?? Data()
+            default:
+                break
+            }
+        }
+        
+        let track = TrackRequest(title: title,
+                                 artist: artist,
+                                 album: album,
+                                 genre: genre,
+                                 artwork: artwork,
+                                 url: "\(url)")
+        
+        return track
+    }
 }
 
 extension AudioPlayer: AVAudioPlayerDelegate {

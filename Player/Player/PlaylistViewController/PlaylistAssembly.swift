@@ -12,8 +12,10 @@ enum PlaylistAssembly {
     static func build(isPlay: Bool,
                       completion: @escaping(Int) -> ()) -> UIViewController {
         
+        let networkManager = NetworkManager()
         let presenter = PlaylistPresenter(isPlay: isPlay,
-                                          completion: completion)
+                                          completion: completion,
+                                          networkManager: networkManager)
         let controller = PlaylistViewController(presenter: presenter)
         
         return controller

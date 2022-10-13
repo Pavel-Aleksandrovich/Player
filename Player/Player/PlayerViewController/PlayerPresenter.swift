@@ -18,13 +18,20 @@ final class PlayerPresenter {
     private let router: IPlayerRouter
     private let player: IAudioPlayer
     private let dataManager: IDataManager
+    private let fileManager: IFileManag
+    private let networkManager: INetworkManager
+    private let group = DispatchGroup()
     
     init(router: IPlayerRouter,
          player: IAudioPlayer,
-         dataManager: IDataManager) {
+         dataManager: IDataManager,
+         fileManager: IFileManag,
+         networkManager: INetworkManager) {
         self.router = router
         self.player = player
         self.dataManager = dataManager
+        self.fileManager = fileManager
+        self.networkManager = networkManager
     }
 }
 
@@ -41,6 +48,8 @@ extension PlayerPresenter: IPlayerPresenter {
         self.setOnSliderValueChangeHandler()
         self.setOnPlayTappedHandler()
         self.addObserver()
+        self.loadFromDirectory()
+        self.setOnFileSelectedFromFileAppHandler()
     }
     
     func removeObserver() {
@@ -52,6 +61,14 @@ extension PlayerPresenter: IPlayerPresenter {
 }
 
 private extension PlayerPresenter {
+    
+    func setOnFileSelectedFromFileAppHandler() {
+        self.controller?.onDocumentPickerSelectedHandler = { [ weak self ] urls in
+            guard let self = self else { return }
+            self.moveToDirectory(urls: urls)
+            self.loadFromDirectory()
+        }
+    }
     
     func setOnLoopTappedHandler() {
         self.controller?.onLoopTappedHandler = { [ weak self ] in
@@ -115,7 +132,7 @@ private extension PlayerPresenter {
                 [ weak self ] index in
                 guard let self = self else { return }
                 
-                if index == self.dataManager.getCurrentIndex() {
+                if index == self.dataManager.getCurrentIndex {
                     self.playTap()
                 } else {
                     self.dataManager.setIndex(index)
@@ -123,15 +140,6 @@ private extension PlayerPresenter {
                     self.setPlayImage()
                 }
             })
-        }
-    }
-    
-    func setPlayImage() {
-        switch self.player.isPlaying {
-        case true:
-            self.controller?.setPlayImage(PlayerImage.pause.name)
-        case false:
-            self.controller?.setPlayImage(PlayerImage.play.name)
         }
     }
     
@@ -152,11 +160,37 @@ private extension PlayerPresenter {
         }
     }
     
+    func setPlayImage() {
+        switch self.player.isPlaying {
+        case true:
+            self.controller?.setPlayImage(PlayerImage.pause.name)
+        case false:
+            self.controller?.setPlayImage(PlayerImage.play.name)
+        }
+    }
+    
+    func moveToDirectory(urls: [URL]) {
+        for url in urls {
+            
+            let documentUrl = self.fileManager.appendingPathComponent(url.lastPathComponent)
+            
+            if self.fileManager.fileExist(atPath: documentUrl.path) == false {
+                self.group.enter()
+                self.networkManager.downloadTask(url: url) { url in
+                    self.fileManager.moveItem(at: url, to: documentUrl)
+                    self.group.leave()
+                }
+                self.group.wait()
+            }
+            self.group.wait()
+        }
+    }
+    
     func configPlayer() {
-        if self.dataManager.getAll().isEmpty == false {
+        if self.dataManager.getAll.isEmpty == false {
             
             self.dataManager.setSong()
-            self.player.setSong(string: self.dataManager.getCurrentSong())
+            self.player.setSong(string: self.dataManager.getCurrentSong.url)
             self.controller?.sliderMaximumValue = Float(self.player.duration)
             self.setPlayImage()
         }
@@ -188,5 +222,29 @@ private extension PlayerPresenter {
     @objc func playerDidFinishPlaying() {
         self.dataManager.nextTapped()
         self.configPlayer()
+    }
+    
+    func loadFromDirectory() {
+        let allFiles = self.fileManager.AllFilesFromDirectory()
+        
+        let musicFiles = self.filter(string: allFiles)
+        
+        for file in musicFiles {
+            
+            let url = self.fileManager.appendingPathComponent(file)
+            
+            if self.dataManager.getAll.contains(where: { $0.url == "\(url)" }) == false {
+                
+                guard let track = self.player.getTrack(url: url) else { return }
+                
+                self.dataManager.append([track])
+            }
+        }
+    }
+    
+    func filter(string: [String]) -> [String] {
+        let extensions = ["mp3", "ac3", "wav", ".au", "aac", "iff", "m4a"]
+        
+        return string.filter { extensions.contains(String($0.suffix(3))) }
     }
 }
