@@ -1,7 +1,7 @@
 # Player
 - Application for playing music
 
-##Branch
+## Branch
 - Current branch - **main**
 
 ## Features
