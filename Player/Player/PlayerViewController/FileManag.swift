@@ -6,27 +6,54 @@
 //
 
 import UIKit
-import MediaPlayer
+
+protocol IFileManag: AnyObject {
+    func AllFilesFromDirectory() -> [String]
+    func fileExist(atPath: String) -> Bool
+    func moveItem(at: URL, to: URL)
+    func appendingPathComponent(_ string: String) -> URL
+}
 
 final class FileManag {
     
-    func findFilesWith() {
-        let fileManager = FileManager.default
-        /// Full path to documents directory
-        let urls = fileManager.urls(for: .downloadsDirectory,
-                                   in: .userDomainMask)
-        
-        print(urls)
-        
-        /// List all contents of directory and return as [String] OR nil if failed
-        let content = try? fileManager.contentsOfDirectory(at: urls[0],
-                                                 includingPropertiesForKeys: nil)
-        
-        print(content)
-        
-        let query = MPMediaQuery.songs().items
-        let mediaCollection = MPMediaItemCollection(items: query ?? [])
-        
-        print(mediaCollection)
+    private let fileManager = FileManager.default
+    
+    private var documentDirectoryURL: URL {
+        get {
+            guard let documentPath = self.fileManager.urls(for: .documentDirectory,
+                                                           in: .userDomainMask).first
+            else { return URL(fileURLWithPath: "") }
+            
+            return documentPath
+        }
+    }
+}
+
+extension FileManag: IFileManag {
+    
+    func AllFilesFromDirectory() -> [String] {
+        do {
+            let url = self.documentDirectoryURL
+            return try self.fileManager.contentsOfDirectory(atPath: url.path)
+        } catch {
+            print(error.localizedDescription)
+            return []
+        }
+    }
+    
+    func fileExist(atPath: String) -> Bool {
+        self.fileManager.fileExists(atPath: atPath)
+    }
+    
+    func moveItem(at: URL, to: URL) {
+        do {
+            try self.fileManager.moveItem(at: at, to: to)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func appendingPathComponent(_ string: String) -> URL {
+        self.documentDirectoryURL.appendingPathComponent(string)
     }
 }

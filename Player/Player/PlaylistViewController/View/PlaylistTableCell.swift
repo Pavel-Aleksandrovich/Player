@@ -28,8 +28,9 @@ final class PlaylistTableCell: UITableViewCell {
 
 extension PlaylistTableCell {
     
-    func set(_ model: Track) {
-        self.songNameLabel.text = model.trackName
+    func set(_ model: TrackRequest) {
+        self.songNameLabel.text = model.title
+        self.posterImageView.image = UIImage(data: model.artwork)
     }
     
     func select(_ image: UIImage?) {

@@ -8,9 +8,11 @@
 import Foundation
 
 protocol INetworkManager: AnyObject {
-    func fetchSearchData(completion: @escaping(Result<[Track], Error>) -> ())
+    func fetchSearchData(query: String,
+                         completion: @escaping(Result<[TrackDTO], Error>) -> ())
     func fetchImageData(from url: URL,
                         completion: @escaping(Data, URLResponse) -> ())
+    func downloadTask(url: URL, completion: @escaping(URL) -> ())
 }
 
 final class NetworkManager: INetworkManager {
@@ -22,9 +24,10 @@ final class NetworkManager: INetworkManager {
         "https://itunes.apple.com/lookup?id=%@&entity=song&limit=200"
     }
     
-    func fetchSearchData(completion: @escaping(Result<[Track], Error>) -> ()) {
+    func fetchSearchData(query: String,
+                         completion: @escaping(Result<[TrackDTO], Error>) -> ()) {
         
-        let string = String(format: ApiUrl.search, "Korol i shut")
+        let string = String(format: ApiUrl.search, query)
         let urlString = string.split(separator: " ").joined(separator: "%20")
         
         guard let url = URL(string: urlString) else { return }
@@ -35,15 +38,15 @@ final class NetworkManager: INetworkManager {
                 print(error.localizedDescription)
                 return
             }
+            
             guard let data = data else { return }
             
             do {
-                let albums = try JSONDecoder().decode(SearchModel<Track>.self,
+                let albums = try JSONDecoder().decode(SearchModel<TrackDTO>.self,
                                                       from: data)
                 completion(.success(albums.results))
             } catch let error {
-                //completion Error
-                print(error.localizedDescription)
+                completion(.failure(error))
             }
         }.resume()
     }
@@ -57,6 +60,7 @@ final class NetworkManager: INetworkManager {
                 print(error.localizedDescription)
                 return
             }
+            
             guard let data = data, let response = response else {
                 //completiom with Result failure
                 print(error?.localizedDescription ?? "No error description")
@@ -64,9 +68,26 @@ final class NetworkManager: INetworkManager {
             completion(data, response)
         }.resume()
     }
+    
+    func downloadTask(url: URL, completion: @escaping(URL) -> ()) {
+        URLSession.shared.downloadTask(with: url) { url, response, error in
+            
+            if let error = error {
+                print("downloadTask ERROR --->\(error.localizedDescription)<--- ERROR downloadTask")
+                return
+            }
+            
+            guard let url = url else {
+                print("downloadTask URL --->\(String(describing: url))<--- URL downloadTask")
+                return }
+            
+            completion(url)
+            
+        }.resume()
+    }
 }
 
-struct Track: Decodable {
+struct TrackDTO: Decodable {
     let artistId: Int?
     let collectionId: Int?
     let trackId: Int?

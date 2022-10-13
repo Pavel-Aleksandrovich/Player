@@ -10,7 +10,7 @@ import UIKit
 protocol IPlaylistPresenter: AnyObject {
     var getNumberOfRowsInSection: Int { get }
     func onViewAttached(controller: IPlaylistViewController)
-    func getSongById(_ index: Int) -> Track
+    func getSongById(_ index: Int) -> TrackRequest
     func getSelectedSong(_ index: Int) -> UIImage?
     func removeObserver()
 }
@@ -19,6 +19,7 @@ final class PlaylistPresenter {
     
     private weak var controller: IPlaylistViewController?
     private let dataStorage = DataStorage.shared
+    private let networkManager: INetworkManager
     private let completion: (Int) -> ()
     private var isPlay: Bool
     
@@ -27,9 +28,11 @@ final class PlaylistPresenter {
     }
     
     init(isPlay: Bool,
-         completion: @escaping(Int) -> ()) {
+         completion: @escaping(Int) -> (),
+         networkManager: INetworkManager) {
         self.completion = completion
         self.isPlay = isPlay
+        self.networkManager = networkManager
     }
 }
 
@@ -40,25 +43,43 @@ extension PlaylistPresenter: IPlaylistPresenter {
         
         self.setOnCellTappedHandler()
         self.addObserver()
+        
+        self.controller?.onSearchHandler = { [ weak self ] text in
+            print(text)
+            self?.networkManager.fetchSearchData(query: text) { result in
+                switch result {
+                case .success(let array):
+                    DispatchQueue.main.async {
+                        let array = array.map { TrackRequest(viewModel: $0)}
+                        self?.dataStorage.songsArray.append(contentsOf: array)
+                        self?.controller?.reloadData()
+                    }
+                case .failure(let error):
+                    print("\(#function) ERROR: ---> \(error.localizedDescription)")
+                }
+            }
+        }
     }
     
-    func getSongById(_ index: Int) -> Track {
+    func getSongById(_ index: Int) -> TrackRequest {
         self.dataStorage.songsArray[index]
     }
     
     func getSelectedSong(_ index: Int) -> UIImage? {
-        if self.dataStorage.song != nil {
-            if index == self.dataStorage.index {
-                switch self.isPlay {
-                case true:
-                    return PlayerImage.pause.name
-                case false:
-                    return PlayerImage.play.name
-                }
+        if index == self.dataStorage.index && self.dataStorage.song != nil {
+            switch self.isPlay {
+            case true:
+                return PlayerImage.pause.name
+            case false:
+                return PlayerImage.play.name
+            }
+        } else {
+            if let image = UIImage(data: self.dataStorage.songsArray[index].artwork) {
+                return image
+            } else {
+                return PlayerImage.music.name
             }
         }
-        
-        return PlayerImage.music.name
     }
     
     func removeObserver() {

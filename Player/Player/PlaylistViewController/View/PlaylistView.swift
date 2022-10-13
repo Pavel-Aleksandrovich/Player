@@ -33,6 +33,8 @@ final class PlaylistView: UIView {
         super.init(frame: .zero)
         self.configAppearance()
         self.makeConstraints()
+        
+        
     }
     
     required init?(coder: NSCoder) {
@@ -60,7 +62,6 @@ private extension PlaylistView {
     }
     
     func configTableView() {
-        self.tableView.showsVerticalScrollIndicator = false
         self.tableView.register(PlaylistTableCell.self,
                                 forCellReuseIdentifier: PlaylistTableCell.id)
     }

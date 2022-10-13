@@ -16,6 +16,7 @@ protocol IAudioPlayer: AnyObject {
     func pause()
     func play()
     func setSong(string: String)
+    func getTrack(url: URL) -> TrackRequest?
 }
 
 final class AudioPlayer: NSObject {
@@ -70,7 +71,7 @@ extension AudioPlayer: IAudioPlayer {
     
     func setSong(string: String) {
         guard let url = URL(string: string) else {
-            print("\(#function) - ERROR: url error")
+            print("\(#function) <--- URL ERROR")
             return }
         
         do {
@@ -85,6 +86,43 @@ extension AudioPlayer: IAudioPlayer {
         self.player.delegate = self
     }
     
+    func getTrack(url: URL) -> TrackRequest? {
+        var title = String()
+        var artist = String()
+        var album = String()
+        var genre = String()
+        var artwork = Data()
+        
+        let assetMetadata = AVPlayerItem(url: url).asset.commonMetadata
+        
+        for item in assetMetadata {
+            guard let commonKey = item.commonKey else { return nil }
+            
+            switch commonKey.rawValue {
+            case "title":
+                title = item.stringValue ?? ""
+            case "artist":
+                artist = item.stringValue ?? ""
+            case "albumName":
+                album = item.stringValue ?? ""
+            case "type":
+                genre = item.stringValue ?? ""
+            case "artwork":
+                artwork = item.dataValue ?? Data()
+            default:
+                break
+            }
+        }
+        
+        let track = TrackRequest(title: title,
+                                 artist: artist,
+                                 album: album,
+                                 genre: genre,
+                                 artwork: artwork,
+                                 url: "\(url)")
+        
+        return track
+    }
 }
 
 extension AudioPlayer: AVAudioPlayerDelegate {

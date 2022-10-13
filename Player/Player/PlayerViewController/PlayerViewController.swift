@@ -19,6 +19,7 @@ protocol IPlayerViewController: AnyObject {
     var onSliderValueChangeHandler: (() -> ())? { get set }
     var sliderValue: Float { get set }
     var sliderMaximumValue: Float { get set }
+    var onDocumentPickerSelectedHandler: (([URL]) -> ())? { get set }
     func setLoopImage(_ image: UIImage?)
     func setPlayImage(_ image: UIImage?)
 }
@@ -34,6 +35,7 @@ final class PlayerViewController: UIViewController {
     var onPlaylistScreenTappedHandler: (() -> ())?
     var onPlayTappedHandler: (() -> ())?
     var onSliderValueChangeHandler: (() -> ())?
+    var onDocumentPickerSelectedHandler: (([URL]) -> ())?
     
     var maximumDurationLabelText: String? {
         get {
@@ -113,12 +115,21 @@ extension PlayerViewController: IPlayerViewController {
     }
 }
 
+extension PlayerViewController: UIDocumentPickerDelegate {
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController,
+                        didPickDocumentsAt urls: [URL]) {
+        self.onDocumentPickerSelectedHandler?(urls)
+    }
+}
+
 // MARK: - Config Appearance
 private extension PlayerViewController {
     
     func configAppearance() {
         self.configView()
-        self.configBarButtonItem()
+        self.configLeftBarButtonItem()
+        self.configRightBarButtonItem()
         self.configPosterImageView()
         self.configPlayImageView()
         self.configNextImageView()
@@ -134,12 +145,22 @@ private extension PlayerViewController {
         self.view.backgroundColor = .white
     }
     
-    func configBarButtonItem() {
+    func configLeftBarButtonItem() {
+        let item = UIBarButtonItem(title: "Files",
+                                   style: .done,
+                                   target: self,
+                                   action: #selector
+                                   (self.onLeftBarButtonTapped))
+        item.tintColor = .black
+        self.navigationItem.leftBarButtonItem = item
+    }
+    
+    func configRightBarButtonItem() {
         let item = UIBarButtonItem(image: PlayerImage.playlist.name,
                                    style: .plain,
                                    target: self,
                                    action: #selector
-                                   (self.onBarButtonTapped))
+                                   (self.onRightBarButtonTapped))
         item.tintColor = .black
         self.navigationItem.rightBarButtonItem = item
     }
@@ -232,6 +253,14 @@ private extension PlayerViewController {
 // MARK: - Actions
 private extension PlayerViewController {
     
+    @objc func onLeftBarButtonTapped() {
+        let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.mp3"],
+                                                            in: .import)
+        documentPicker.delegate = self
+        documentPicker.allowsMultipleSelection = true
+        present(documentPicker, animated: true)
+    }
+    
     @objc func onLoopTapped() {
         self.onLoopTappedHandler?()
     }
@@ -244,7 +273,7 @@ private extension PlayerViewController {
         self.onPreviousTappedHandler?()
     }
     
-    @objc func onBarButtonTapped() {
+    @objc func onRightBarButtonTapped() {
         self.onPlaylistScreenTappedHandler?()
     }
     

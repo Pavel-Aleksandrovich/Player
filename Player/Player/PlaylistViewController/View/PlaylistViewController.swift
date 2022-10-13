@@ -9,6 +9,7 @@ import UIKit
 
 protocol IPlaylistViewController: AnyObject {
     var onCellTappedHandler: ((Int) -> ())? { get set }
+    var onSearchHandler: ((String) -> ())? { get set }
     func reloadData()
 }
 
@@ -17,7 +18,10 @@ final class PlaylistViewController: UIViewController {
     private let presenter: IPlaylistPresenter
     private let mainView = PlaylistView()
     
+    private let searchController = UISearchController()
+    
     var onCellTappedHandler: ((Int) -> ())?
+    var onSearchHandler: ((String) -> ())?
     
     init(presenter: IPlaylistPresenter) {
         self.presenter = presenter
@@ -39,6 +43,8 @@ final class PlaylistViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.presenter.onViewAttached(controller: self)
+        self.configSearchController()
+        
         self.mainView.tableViewDataSource = self
         self.mainView.tableViewDelegate = self
     }
@@ -53,6 +59,17 @@ extension PlaylistViewController: IPlaylistViewController {
     
     func reloadData() {
         self.mainView.reloadData()
+    }
+}
+
+extension PlaylistViewController: UISearchResultsUpdating {
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let text = searchController.searchBar.text else { return }
+        
+        if !text.isEmpty {
+            self.onSearchHandler?(text)
+        }
     }
 }
 
@@ -86,5 +103,18 @@ extension PlaylistViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
         self.onCellTappedHandler?(indexPath.row)
+    }
+}
+
+private extension PlaylistViewController {
+    
+    func configSearchController() {
+        self.searchController.searchResultsUpdater = self
+        self.searchController.obscuresBackgroundDuringPresentation = false
+        self.searchController.searchBar.placeholder = "Search"
+        self.searchController.obscuresBackgroundDuringPresentation = false
+        self.navigationItem.searchController = self.searchController
+        self.definesPresentationContext = true
+        self.navigationItem.hidesSearchBarWhenScrolling = false
     }
 }

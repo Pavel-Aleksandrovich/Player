@@ -8,21 +8,21 @@
 import Foundation
 
 protocol IDataManager: AnyObject {
-    var getAll: [Track] { get }
+    var getAll: [TrackRequest] { get }
     var getCurrentIndex: Int { get }
-    var getCurrentSong: Track { get }
+    var getCurrentSong: TrackRequest { get }
     func nextTapped()
     func previousTapped()
     func setIndex(_ index: Int)
     func setSong()
-    func setData(_ array: [Track])
+    func append(_ array: [TrackRequest])
 }
 
 final class DataManager {
     
     private let dataStorage = DataStorage.shared
     
-    var getAll: [Track] {
+    var getAll: [TrackRequest] {
         self.dataStorage.songsArray
     }
     
@@ -30,7 +30,7 @@ final class DataManager {
         self.dataStorage.index
     }
     
-    var getCurrentSong: Track {
+    var getCurrentSong: TrackRequest {
         self.dataStorage.songsArray[self.dataStorage.index]
     }
 }
@@ -63,7 +63,7 @@ extension DataManager: IDataManager {
         self.dataStorage.song = self.dataStorage.songsArray[self.dataStorage.index]
     }
     
-    func setData(_ array: [Track]) {
+    func append(_ array: [TrackRequest]) {
         self.dataStorage.songsArray.append(contentsOf: array)
     }
 }

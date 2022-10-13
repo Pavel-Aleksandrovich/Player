@@ -4,8 +4,6 @@
 <dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>$(PRODUCT_NAME) uses Music</string>
-	<key>UIFileSharingEnabled</key>
-	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>UISupportsDocumentBrowser</key>

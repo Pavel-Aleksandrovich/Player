@@ -15,7 +15,7 @@ final class DataStorage {
     
     var index = Int()
     
-    var song: Track?
+    var song: TrackRequest?
     
-    var songsArray: [Track] = []
+    var songsArray: [TrackRequest] = []
 }
